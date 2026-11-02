@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: v5p16-gr00t-qwen-image-svc
+  namespace: default
+  labels:
+    app: v5p16-gr00t-qwen-image
+spec:
+  clusterIP: None
+  publishNotReadyAddresses: true
+  selector:
+    job-name: v5p16-gr00t-qwen-image
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: v5p16-gr00t-qwen-image
+  namespace: default
+  labels:
+    app: v5p16-gr00t-qwen-image
+    workload: omni-world-portfolio-vla-diffusion
+spec:
+  completions: 4
+  parallelism: 4
+  completionMode: Indexed
+  backoffLimit: 16
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+      labels:
+        app: v5p16-gr00t-qwen-image
+        workload: omni-world-portfolio-vla-diffusion
+    spec:
+      serviceAccountName: default
+      subdomain: v5p16-gr00t-qwen-image-svc
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 10
+      restartPolicy: OnFailure
+      nodeSelector:
+        cloud.google.com/gke-nodepool: tpu-v5p-16-pool
+        cloud.google.com/gke-tpu-accelerator: tpu-v5p-slice
+        cloud.google.com/gke-tpu-topology: 2x2x4
+      tolerations:
+      - key: "google.com/tpu"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "cloud.google.com/gke-spot"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "cloud.google.com/gke-queued"
+        operator: "Exists"
+        effect: "NoSchedule"
+      containers:
+      - name: omni-vla-diffusion-bench
+        image: us-central1-docker.pkg.dev/YOUR_GCP_PROJECT_ID/vllm/vllm-torchtpu-omni:v0.32.0
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: true
+        env:
+        - name: PJRT_DEVICE
+          value: "TPU"
+        - name: MULTIMODAL_CPU_OFFLOAD_URL
+          value: "http://multimodal-cpu-offload-svc.default.svc.cluster.local:8090"
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: HF_TOKEN
+        command:
+        - bash
+        - -lc
+        - |
+          set -euo pipefail
+          ulimit -c 0 || true
+          echo "[host-${JOB_COMPLETION_INDEX:-0}] Bootstrapping on $(hostname)..."
+
+          # 1. Remount /dev/shm to 380G and clean any stale tmpfs artifacts / locks
+          mount -o remount,size=380G /dev/shm || true
+          rm -rf /dev/shm/* /tmp/libtpu_lockfile 2>/dev/null || true
+          mkdir -p /dev/shm/hf_cache /dev/shm/tmp /tmp/omni_bench /models/omni-world-results
+          df -h /dev/shm
+
+          # 2. Download benchmark suite & helpers from regional GCS into /tmp/omni_bench/
+          TOK=$(curl -sS -H "Metadata-Flavor: Google" \
+            "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token" \
+            | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+
+          for f in \
+            gcs_stager.py \
+            tpu_single_host_setup.py \
+            cpu_offload_client.py \
+            run_gr00t_vla_tpu_bench.py \
+            run_qwen_image_tpu_bench.py; do
+            curl -fsSL -H "Authorization: Bearer ${TOK}" \
+              "https://storage.googleapis.com/storage/v1/b/YOUR_GCS_BUCKET/o/omni-world-portfolio%2Fscripts%2F${f}?alt=media" \
+              -o "/tmp/omni_bench/${f}"
+          done
+          chmod +x /tmp/omni_bench/*.py
+
+          # 3. Cooperative 4-host zero-disk HF -> GCS staging across hosts 0..3
+          python3 -u /tmp/omni_bench/run_gr00t_vla_tpu_bench.py \
+            --chip-type=v5p \
+            --slice-name=v5p-16 \
+            --num-hosts=4 \
+            --cores-per-host=4 \
+            --stage-only
+
+          python3 -u /tmp/omni_bench/run_qwen_image_tpu_bench.py \
+            --chip-type=v5p \
+            --slice-name=v5p-16 \
+            --num-hosts=4 \
+            --cores-per-host=4 \
+            --stage-only
+
+          if [ "${JOB_COMPLETION_INDEX:-0}" != "0" ]; then
+            echo "[host-${JOB_COMPLETION_INDEX}] Cooperative GCS staging complete; exiting 0."
+            exit 0
+          fi
+
+          # 4. Full single-host / slice-scaled VLA + Diffusion benchmark execution on host 0
+          python3 -u /tmp/omni_bench/run_gr00t_vla_tpu_bench.py \
+            --chip-type=v5p \
+            --slice-name=v5p-16 \
+            --num-hosts=4 \
+            --cores-per-host=4 \
+            --use-shm
+
+          rm -rf /dev/shm/GR00T* /tmp/libtpu_lockfile 2>/dev/null || true
+
+          python3 -u /tmp/omni_bench/run_qwen_image_tpu_bench.py \
+            --chip-type=v5p \
+            --slice-name=v5p-16 \
+            --num-hosts=4 \
+            --cores-per-host=4 \
+            --use-shm
+
+          echo "[host-0] ALL GR00T-N1.7-3B & Qwen-Image / Qwen-Image-2.1 benchmarks complete!"
+        resources:
+          requests:
+            google.com/tpu: "4"
+            memory: "350Gi"
+          limits:
+            google.com/tpu: "4"
+        volumeMounts:
+        - name: dshm
+          mountPath: /dev/shm
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
