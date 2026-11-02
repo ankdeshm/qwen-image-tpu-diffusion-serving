@@ -1,29 +1,52 @@
-# Qwen-Image (`20B` MMDiT) & Qwen-Image-2.1 / 2.1-Turbo (`Qwen3-VL`) — `v7x-spot-4c` (`v7x`)
+# `Qwen/Qwen-Image` (20B MMDiT) & `Qwen/Qwen-Image-2.1` (`Qwen3-VL`) Diffusion Serving on Cloud TPU `v5p` & `v7x` — Slice `v7x-spot-4c`
 
-- **Updated (UTC):** `2026-11-02T19:03:48.814991+00:00`
-- **Hardware Topology:** `1` hosts x `8` TPU cores/host = `8` TPU cores
-- **Models Covered:** `Qwen/Qwen-Image` (`Qwen2.5-VL` + 60-block MMDiT), `Qwen/Qwen-Image-2.1-Turbo` (`8`-step `Qwen3-VL`), `Qwen/Qwen-Image-2.1` (`28`-step `Qwen3-VL`)
+### Slice `v7x-spot-4c` (`v7x`, `25` Verified Benchmark Points)
 
-## Disaggregated CPU PNG / WebP Image Encoding Ablation (`multimodal-cpu-offload-svc:8090`)
+- **Raw Artifacts:** [`results/v7x-spot-4c/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./summary.json) *(updated `2026-11-02T19:59:29.819135+00:00`)*
 
-| Resolution | Offload Active | On-Host CPU PNG (ms) | Disagg AVX-512 PNG RTT (ms) | Disagg WebP RTT (ms) | PNG Offload Speedup |
-|---|:---:|---:|---:|---:|---:|
-| `512x512` | `True` | 32.28 | **76.49** | 139.15 | `0.42x` |
-| `1024x1024` | `True` | 114.86 | **148.75** | 147.02 | `0.77x` |
-| `1328x1328` | `True` | 201.42 | **248.87** | 238.45 | `0.81x` |
-| `1664x928` | `True` | 165.59 | **217.95** | 210.2 | `0.76x` |
-| `1536x1024` | `True` | 173.81 | **221.78** | 209.05 | `0.78x` |
-| `2048x2048` | `True` | 455.06 | **573.35** | 557.77 | `0.79x` |
+#### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
 
-## End-to-End Diffusion Serving & TorchTPU Compilation Results
+| Engine | Precision | `Ulysses × Cluster DP` | Resolution | Steps | Conc | Warmup (s) | Median E2E (s) | P95 E2E (s) | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `512x512` | `20` | `1` | `72.39` | **`38.878`** | `73.758` | `1.54` | **`3.09`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1024x1024` | `20` | `1` | `105.43` | **`46.868`** | `88.853` | `1.28` | **`2.56`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1024x1024` | `20` | `2` | `105.43` | **`7.719`** | `10.418` | `11.48` | **`22.95`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1024x1024` | `20` | `4` | `105.43` | **`12.361`** | `106.212` | `2.26` | **`4.52`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1024x1024` | `50` | `1` | `11.37` | **`11.158`** | `11.181` | `5.36` | **`10.72`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1328x1328` | `20` | `1` | `94.53` | **`37.234`** | `68.845` | `1.61` | **`3.22`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1328x1328` | `20` | `2` | `94.53` | **`8.772`** | `12.061` | `9.90` | **`19.79`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1328x1328` | `50` | `1` | `12.82` | **`13.675`** | `13.838` | `4.37` | **`8.74`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1664x928` | `20` | `1` | `118.71` | **`54.878`** | `104.394` | `1.09` | **`2.18`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1664x928` | `20` | `2` | `118.71` | **`8.299`** | `11.263` | `10.60` | **`21.21`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=2` | `1664x928` | `50` | `1` | `12.80` | **`12.709`** | `12.782` | `4.70` | **`9.40`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=2` | `1024x1024` | `20` | `1` | `9.22` | **`6.203`** | `9.078` | `9.61` | **`19.22`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=2` | `1024x1024` | `20` | `2` | `9.22` | **`5.068`** | `6.772` | `17.61` | **`35.22`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=2` | `1328x1328` | `20` | `1` | `8.03` | **`5.868`** | `7.925` | `10.11` | **`20.21`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `512x512` | `20` | `1` | `10.28` | **`6.940`** | `10.011` | `8.63` | **`8.63`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1024x1024` | `20` | `1` | `45.54` | **`7.097`** | `10.594` | `8.41` | **`8.41`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1024x1024` | `20` | `2` | `45.54` | **`5.911`** | `8.138` | `14.67` | **`14.67`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1024x1024` | `20` | `4` | `45.54` | **`10.954`** | `27.902` | `8.59` | **`8.59`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1024x1024` | `50` | `1` | `9.69` | **`9.065`** | `9.145` | `6.59` | **`6.59`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1328x1328` | `20` | `1` | `59.86` | **`8.222`** | `12.556` | `7.24` | **`7.24`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1328x1328` | `20` | `2` | `59.86` | **`6.148`** | `8.345` | `14.28` | **`14.28`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1328x1328` | `50` | `1` | `9.33` | **`9.371`** | `9.445` | `6.36` | **`6.36`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `20` | `1` | `53.35` | **`9.293`** | `14.695` | `6.42` | **`6.42`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `20` | `2` | `53.35` | **`5.865`** | `7.821` | `15.22` | **`15.22`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `50` | `1` | `9.37` | **`9.254`** | `9.286` | `6.44` | **`6.44`** |
 
-| Model | Engine | Prec | TP/Ulysses | Cluster DP | Task / Resolution | Steps | Conc | Stage-1 VL (ms) | MMDiT Step (ms) | VAE (ms) | E2E Local CPU (s) | E2E P50 (s) | Cluster img/min | Status |
-|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-512x512` | `20` | `1` | - | - | - | - | **37.344** | **3.21** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `1` | - | - | - | - | **44.658** | **2.68** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `2` | - | - | - | - | **7.364** | **24.46** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `4` | - | - | - | - | **12.22** | **4.68** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `50` | `1` | - | - | - | - | **11.683** | **10.24** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `20` | `1` | - | - | - | - | **36.6** | **3.27** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `20` | `2` | - | - | - | - | **8.912** | **19.85** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `50` | `1` | - | - | - | - | **13.902** | **8.59** | `PASS` |
+#### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
+
+| Resolution & Format | On-Host CPU (ms) | Disagg CPU RTT (ms) | Remote AVX-512 Compute (ms) | Remote Rate (img/s) | Speedup vs On-Host |
+|---|---:|---:|---:|---:|---:|
+| `512x512_png` | `28.14` | **`37.90`** | `34.98` | `28.6` | **`0.74x`** |
+| `512x512_webp` | `27.92` | **`40.54`** | `34.20` | `29.2` | **`0.69x`** |
+| `1024x1024_png` | `112.61` | **`143.81`** | `139.99` | `7.1` | **`0.78x`** |
+| `1024x1024_webp` | `112.52` | **`143.63`** | `135.34` | `7.4` | **`0.78x`** |
+| `1328x1328_png` | `190.64` | **`246.92`** | `236.64` | `4.2` | **`0.77x`** |
+| `1328x1328_webp` | `191.07` | **`234.02`** | `229.31` | `4.4` | **`0.82x`** |
+| `1664x928_png` | `165.64` | **`212.07`** | `207.18` | `4.8` | **`0.78x`** |
+| `1664x928_webp` | `167.28` | **`208.82`** | `199.39` | `5.0` | **`0.80x`** |
+| `1536x1024_png` | `175.76` | **`222.80`** | `212.14` | `4.7` | **`0.79x`** |
+| `1536x1024_webp` | `169.83` | **`213.22`** | `203.54` | `4.9` | **`0.80x`** |
+| `2048x2048_png` | `452.28` | **`570.59`** | `563.54` | `1.8` | **`0.79x`** |
+| `2048x2048_webp` | `453.21` | **`551.66`** | `541.30` | `1.8` | **`0.82x`** |

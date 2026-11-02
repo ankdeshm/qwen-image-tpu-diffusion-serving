@@ -39,17 +39,17 @@ spec:
       terminationGracePeriodSeconds: 10
       restartPolicy: OnFailure
       nodeSelector:
-        cloud.google.com/gke-nodepool: tpu-v5p-16-pool
-        cloud.google.com/gke-tpu-accelerator: tpu-v5p-slice
-        cloud.google.com/gke-tpu-topology: 2x2x4
+        cloud.google.com/tpu-worker-node: tpu-v5p-16-pool
+        cloud.google.com/tpu-worker-node: tpu-v5p-slice
+        cloud.google.com/tpu-worker-node: 2x2x4
       tolerations:
       - key: "google.com/tpu"
         operator: "Exists"
         effect: "NoSchedule"
-      - key: "cloud.google.com/gke-spot"
+      - key: "cloud.google.com/tpu-worker-node"
         operator: "Exists"
         effect: "NoSchedule"
-      - key: "cloud.google.com/gke-queued"
+      - key: "cloud.google.com/tpu-worker-node"
         operator: "Exists"
         effect: "NoSchedule"
       containers:

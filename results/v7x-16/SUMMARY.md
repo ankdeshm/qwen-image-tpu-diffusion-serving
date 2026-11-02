@@ -1,24 +1,41 @@
-# Qwen-Image (`20B` MMDiT) & Qwen-Image-2.1 / 2.1-Turbo (`Qwen3-VL`) — `v7x-16` (`v7x`)
+# `Qwen/Qwen-Image` (20B MMDiT) & `Qwen/Qwen-Image-2.1` (`Qwen3-VL`) Diffusion Serving on Cloud TPU `v5p` & `v7x` — Slice `v7x-16`
 
-- **Updated (UTC):** `2026-11-02T19:07:03.733583+00:00`
-- **Hardware Topology:** `4` hosts x `8` TPU cores/host = `32` TPU cores
-- **Models Covered:** `Qwen/Qwen-Image` (`Qwen2.5-VL` + 60-block MMDiT), `Qwen/Qwen-Image-2.1-Turbo` (`8`-step `Qwen3-VL`), `Qwen/Qwen-Image-2.1` (`28`-step `Qwen3-VL`)
+### Slice `v7x-16` (`v7x`, `14` Verified Benchmark Points)
 
-## Disaggregated CPU PNG / WebP Image Encoding Ablation (`multimodal-cpu-offload-svc:8090`)
+- **Raw Artifacts:** [`results/v7x-16/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-16/summary.json`](./summary.json) *(updated `2026-11-02T20:01:36.668802+00:00`)*
 
-| Resolution | Offload Active | On-Host CPU PNG (ms) | Disagg AVX-512 PNG RTT (ms) | Disagg WebP RTT (ms) | PNG Offload Speedup |
-|---|:---:|---:|---:|---:|---:|
-| `512x512` | `True` | 27.99 | **44.75** | 37.5 | `0.63x` |
-| `1024x1024` | `True` | 118.09 | **144.6** | 143.75 | `0.82x` |
-| `1328x1328` | `True` | 200.01 | **247.89** | 237.71 | `0.81x` |
-| `1664x928` | `True` | 165.42 | **217.74** | 204.44 | `0.76x` |
-| `1536x1024` | `True` | 189.17 | **217.5** | 209.24 | `0.87x` |
-| `2048x2048` | `True` | 455.69 | **572.24** | 554.01 | `0.8x` |
+#### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
 
-## End-to-End Diffusion Serving & TorchTPU Compilation Results
+| Engine | Precision | `Ulysses × Cluster DP` | Resolution | Steps | Conc | Warmup (s) | Median E2E (s) | P95 E2E (s) | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `512x512` | `20` | `1` | `73.16` | **`38.717`** | `73.377` | `1.55` | **`12.39`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `1` | `106.75` | **`46.700`** | `88.654` | `1.28` | **`10.27`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `2` | `106.75` | **`7.553`** | `10.193` | `11.73` | **`93.84`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `4` | `106.75` | **`11.845`** | `105.826` | `2.27` | **`18.14`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1024x1024` | `50` | `1` | `11.33` | **`11.294`** | `11.295` | `5.30` | **`42.37`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1328x1328` | `20` | `1` | `96.26` | **`36.893`** | `68.091` | `1.62` | **`12.99`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1328x1328` | `20` | `2` | `96.26` | **`8.906`** | `11.998` | `9.95` | **`79.58`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1328x1328` | `50` | `1` | `13.61` | **`13.662`** | `13.702` | `4.37` | **`34.97`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1664x928` | `20` | `1` | `120.83` | **`53.985`** | `102.726` | `1.11` | **`8.88`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1664x928` | `20` | `2` | `120.83` | **`7.822`** | `10.365` | `11.51` | **`92.09`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=8` | `1664x928` | `50` | `1` | `12.64` | **`12.550`** | `12.623` | `4.76` | **`38.07`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `1` | `9.02` | **`6.054`** | `8.737` | `9.85` | **`78.81`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `2` | `9.02` | **`5.116`** | `6.843` | `17.44` | **`139.50`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1328x1328` | `20` | `1` | `8.01` | **`5.794`** | `7.716` | `10.24` | **`81.91`** |
 
-| Model | Engine | Prec | TP/Ulysses | Cluster DP | Task / Resolution | Steps | Conc | Stage-1 VL (ms) | MMDiT Step (ms) | VAE (ms) | E2E Local CPU (s) | E2E P50 (s) | Cluster img/min | Status |
-|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-512x512` | `20` | `1` | - | - | - | - | **37.707** | **12.73** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `1` | - | - | - | - | **43.041** | **11.14** | `PASS` |
-| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `2` | - | - | - | - | **7.129** | **101.18** | `PASS` |
+#### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
+
+| Resolution & Format | On-Host CPU (ms) | Disagg CPU RTT (ms) | Remote AVX-512 Compute (ms) | Remote Rate (img/s) | Speedup vs On-Host |
+|---|---:|---:|---:|---:|---:|
+| `512x512_png` | `28.13` | **`41.35`** | `35.16` | `28.4` | **`0.68x`** |
+| `512x512_webp` | `28.35` | **`41.69`** | `34.24` | `29.2` | **`0.68x`** |
+| `1024x1024_png` | `117.87` | **`149.86`** | `140.70` | `7.1` | **`0.79x`** |
+| `1024x1024_webp` | `113.33` | **`140.18`** | `135.48` | `7.4` | **`0.81x`** |
+| `1328x1328_png` | `189.75` | **`241.87`** | `237.13` | `4.2` | **`0.78x`** |
+| `1328x1328_webp` | `199.65` | **`239.25`** | `228.17` | `4.4` | **`0.83x`** |
+| `1664x928_png` | `184.07` | **`212.65`** | `207.56` | `4.8` | **`0.87x`** |
+| `1664x928_webp` | `167.63` | **`203.20`** | `198.84` | `5.0` | **`0.82x`** |
+| `1536x1024_png` | `168.57` | **`218.94`** | `211.17` | `4.7` | **`0.77x`** |
+| `1536x1024_webp` | `168.93` | **`212.11`** | `202.61` | `4.9` | **`0.80x`** |
+| `2048x2048_png` | `447.21` | **`571.82`** | `563.83` | `1.8` | **`0.78x`** |
+| `2048x2048_webp` | `445.36` | **`553.49`** | `539.54` | `1.9` | **`0.80x`** |
