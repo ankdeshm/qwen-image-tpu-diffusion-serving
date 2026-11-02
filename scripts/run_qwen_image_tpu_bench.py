@@ -677,11 +677,13 @@ def run_child_diffusers_qwen21_worker(
 ) -> None:
     """Engine B1: Attempts native `diffusers` `QwenImage21Pipeline` (or DiffusionPipeline) execution on TPU."""
     import torch
+    from tpu_single_host_setup import _patch_torchtpu_export_multidevice
+    _patch_torchtpu_export_multidevice()
     import torch_tpu  # noqa: F401
 
-    n_devs = torch.tpu.device_count()
+    n_devs = torch.accelerator.device_count()
     dev0 = torch.device("tpu:0")
-    torch.tpu.set_device(dev0)
+    torch.accelerator.set_device_index((dev0).index if hasattr(dev0, 'index') and (dev0).index is not None else int(str(dev0).split(':')[-1]))
     rows: list[dict[str, Any]] = []
 
     try:
@@ -717,7 +719,7 @@ def run_child_diffusers_qwen21_worker(
                 pipe.text_encoder.to(torch.device("tpu:1"))
             if getattr(pipe, "vae", None) is not None:
                 pipe.vae.to(torch.device("tpu:2"))
-        torch.tpu.synchronize()
+        torch.accelerator.synchronize()
         load_s = round(time.perf_counter() - t_l0, 2)
 
         for res_str in ("1024x1024", "1536x1024", "2048x2048"):
@@ -740,11 +742,11 @@ def run_child_diffusers_qwen21_worker(
 
                 # Warmup pass
                 _ = pipe(**call_kwargs)
-                torch.tpu.synchronize()
+                torch.accelerator.synchronize()
 
                 t0 = time.perf_counter()
                 out = pipe(**call_kwargs)
-                torch.tpu.synchronize()
+                torch.accelerator.synchronize()
                 e2e_s = time.perf_counter() - t0
 
                 img = out.images[0]
@@ -826,10 +828,12 @@ def run_child_torchtpu_mmdit_worker(
     from safetensors import safe_open
 
     torch._dynamo.config.cache_size_limit = 256
+    if hasattr(torch._dynamo.config, "recompile_limit"):
+        torch._dynamo.config.recompile_limit = 64
     if hasattr(torch._dynamo.config, "accumulated_cache_size_limit"):
         torch._dynamo.config.accumulated_cache_size_limit = 1024
 
-    n_devs = torch.tpu.device_count()
+    n_devs = torch.accelerator.device_count()
     tp_eff = min(tp_size, max(1, n_devs))
     dp_per_host = max(1, n_devs // tp_eff)
     devices = [torch.device(f"tpu:{i}") for i in range(n_devs)]
@@ -882,7 +886,7 @@ def run_child_torchtpu_mmdit_worker(
     use_fp8_mxu = False
 
     if precision_mode == "FP8" and fp8_dtype is not None and hasattr(torch, "_scaled_mm"):
-        torch.tpu.set_device(devices[0])
+        torch.accelerator.set_device_index((devices[0]).index if hasattr(devices[0], 'index') and (devices[0]).index is not None else int(str(devices[0]).split(':')[-1]))
         for cand_dt_name in ("float8_e4m3fn", "float8_e5m2"):
             cand_dt = getattr(torch, cand_dt_name, None)
             if cand_dt is None:
@@ -895,7 +899,7 @@ def run_child_torchtpu_mmdit_worker(
                     sb = torch.ones(sc_shape, device=devices[0], dtype=torch.float32)
                     res_probe = torch._scaled_mm(a_t, b_col, scale_a=sa, scale_b=sb, out_dtype=torch.bfloat16)
                     _ = res_probe[0] if isinstance(res_probe, tuple) else res_probe
-                    torch.tpu.synchronize()
+                    torch.accelerator.synchronize()
                     fp8_dtype = cand_dt
                     fp8_scale_shape = sc_shape
                     use_fp8_mxu = True
@@ -926,7 +930,7 @@ def run_child_torchtpu_mmdit_worker(
                 for dp_g in range(dp_per_host):
                     d_i = dp_g * tp_eff + slot
                     if d_i < n_devs:
-                        torch.tpu.set_device(devices[d_i])
+                        torch.accelerator.set_device_index((devices[d_i]).index if hasattr(devices[d_i], 'index') and (devices[d_i]).index is not None else int(str(devices[d_i]).split(':')[-1]))
                         if precision_mode == "FP8" and fp8_dtype is not None and tc.ndim >= 2:
                             td = tc.to(torch.bfloat16).to(fp8_dtype).to(devices[d_i])
                         else:
@@ -936,7 +940,7 @@ def run_child_torchtpu_mmdit_worker(
                             per_slot_bytes[slot] += td.numel() * td.element_size()
                 if per_slot_bytes[slot] >= max_bytes_per_core:
                     break
-    torch.tpu.synchronize()
+    torch.accelerator.synchronize()
     weight_load_s = round(time.perf_counter() - t_l0, 2)
     shard_gib_per_core = round(max(per_slot_bytes) / (1024**3), 2) if per_slot_bytes else 0.0
     log(
@@ -1069,7 +1073,7 @@ def run_child_torchtpu_mmdit_worker(
     compile_succeeded = True
     for dp_g in range(dp_per_host):
         dev = devices[dp_g * tp_eff]
-        torch.tpu.set_device(dev)
+        torch.accelerator.set_device_index((dev).index if hasattr(dev, 'index') and (dev).index is not None else int(str(dev).split(':')[-1]))
         s1 = Stage1QwenVLEncoder(dev).eval()
         s2 = Stage2QwenDoubleStreamMMDiTBlock(dev).eval()
         s3 = Stage3QwenVAEDecoder(dev).eval()
@@ -1130,7 +1134,7 @@ def run_child_torchtpu_mmdit_worker(
 
                 for p in dp_pipelines:
                     dev = p["dev"]
-                    torch.tpu.set_device(dev)
+                    torch.accelerator.set_device_index((dev).index if hasattr(dev, 'index') and (dev).index is not None else int(str(dev).split(':')[-1]))
                     tok_in.append(torch.randn((1, txt_ctx_tok, d_vl), device=dev, dtype=torch.bfloat16) * 0.02)
                     img_in.append(torch.randn((cfg_batch, local_img_tok, d_dit), device=dev, dtype=torch.bfloat16) * 0.02)
                     vae_in.append(torch.randn((1, vae_z_ch, tile_lat_h, lat_w), device=dev, dtype=torch.bfloat16) * 0.02)
@@ -1138,7 +1142,7 @@ def run_child_torchtpu_mmdit_worker(
                 # Sequential warmup per DP replica on host
                 txt_conds = []
                 for idx_p, p in enumerate(dp_pipelines):
-                    torch.tpu.set_device(p["dev"])
+                    torch.accelerator.set_device_index((p["dev"]).index if hasattr(p["dev"], 'index') and (p["dev"]).index is not None else int(str(p["dev"]).split(':')[-1]))
                     try:
                         tc_out = p["s1"](tok_in[idx_p])
                     except Exception:
@@ -1157,17 +1161,17 @@ def run_child_torchtpu_mmdit_worker(
                     except Exception:
                         _ = p["s3_eager"](vae_in[idx_p])
                         p["s3"] = p["s3_eager"]
-                    torch.tpu.synchronize()
+                    torch.accelerator.synchronize()
 
                 # 1. Stage-1 VLM Conditioning (`Qwen2.5-VL` / `Qwen3-VL`) concurrent across DP_host
                 t_s1 = time.perf_counter()
                 with concurrent.futures.ThreadPoolExecutor(max_workers=dp_per_host) as pool:
                     def _run_s1(i: int) -> torch.Tensor:
-                        torch.tpu.set_device(dp_pipelines[i]["dev"])
+                        torch.accelerator.set_device_index((dp_pipelines[i]["dev"]).index if hasattr(dp_pipelines[i]["dev"], 'index') and (dp_pipelines[i]["dev"]).index is not None else int(str(dp_pipelines[i]["dev"]).split(':')[-1]))
                         return dp_pipelines[i]["s1"](tok_in[i])
 
                     list(pool.map(_run_s1, range(dp_per_host)))
-                torch.tpu.synchronize()
+                torch.accelerator.synchronize()
                 stage1_s = time.perf_counter() - t_s1
 
                 # 2. Stage-2 Double-Stream MMDiT Denoising concurrent across DP_host (median over 4 passes)
@@ -1176,7 +1180,7 @@ def run_child_torchtpu_mmdit_worker(
                     t_st = time.perf_counter()
                     with concurrent.futures.ThreadPoolExecutor(max_workers=dp_per_host) as pool:
                         def _run_s2(i: int) -> torch.Tensor:
-                            torch.tpu.set_device(dp_pipelines[i]["dev"])
+                            torch.accelerator.set_device_index((dp_pipelines[i]["dev"]).index if hasattr(dp_pipelines[i]["dev"], 'index') and (dp_pipelines[i]["dev"]).index is not None else int(str(dp_pipelines[i]["dev"]).split(':')[-1]))
                             xi = img_in[i]
                             xt = txt_conds[i]
                             for _ in range(measured_blocks):
@@ -1184,7 +1188,7 @@ def run_child_torchtpu_mmdit_worker(
                             return xi
 
                         list(pool.map(_run_s2, range(dp_per_host)))
-                    torch.tpu.synchronize()
+                    torch.accelerator.synchronize()
                     step_samples_s.append((time.perf_counter() - t_st) * layer_scale)
 
                 per_step_s = statistics.median(step_samples_s)
@@ -1194,7 +1198,7 @@ def run_child_torchtpu_mmdit_worker(
                 t_s3 = time.perf_counter()
                 with concurrent.futures.ThreadPoolExecutor(max_workers=dp_per_host) as pool:
                     def _run_s3(i: int) -> torch.Tensor:
-                        torch.tpu.set_device(dp_pipelines[i]["dev"])
+                        torch.accelerator.set_device_index((dp_pipelines[i]["dev"]).index if hasattr(dp_pipelines[i]["dev"], 'index') and (dp_pipelines[i]["dev"]).index is not None else int(str(dp_pipelines[i]["dev"]).split(':')[-1]))
                         out_t = None
                         for _ in range(vae_tiles):
                             out_t = dp_pipelines[i]["s3"](vae_in[i])
@@ -1202,12 +1206,12 @@ def run_child_torchtpu_mmdit_worker(
                         return out_t
 
                     vae_outs = list(pool.map(_run_s3, range(dp_per_host)))
-                torch.tpu.synchronize()
+                torch.accelerator.synchronize()
                 stage3_s = time.perf_counter() - t_s3
                 finite_ok = bool(torch.isfinite(vae_outs[0]).all().item())
 
                 del tok_in, img_in, vae_in, txt_conds, vae_outs
-                torch.tpu.synchronize()
+                torch.accelerator.synchronize()
 
             # Combine with CPU image encode (PNG + WebP) and optional TI2I vision preproc ablation
             enc_png = img_enc_map.get(f"{res_str}_png", {})

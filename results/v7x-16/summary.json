@@ -1,0 +1,334 @@
+{
+  "updated_at_utc": "2026-11-02T19:07:03.733583+00:00",
+  "models": [
+    "Qwen/Qwen-Image",
+    "Qwen/Qwen-Image-2.1-Turbo",
+    "Qwen/Qwen-Image-2.1"
+  ],
+  "slice_name": "v7x-16",
+  "chip_type": "v7x",
+  "num_hosts": 4,
+  "cores_per_host": 8,
+  "stage_infos": {
+    "Qwen-Image": {
+      "repo_id": "Qwen/Qwen-Image",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image",
+      "cached": true
+    },
+    "Qwen-Image-2-1-Turbo": {
+      "repo_id": "Qwen/Qwen-Image-2.1-Turbo",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image-2-1-Turbo",
+      "cached": true
+    },
+    "Qwen-Image-2-1": {
+      "repo_id": "Qwen/Qwen-Image-2.1",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image-2-1",
+      "cached": true
+    }
+  },
+  "diffusers_setup": {},
+  "manifests": {
+    "Qwen-Image": {
+      "dir_name": "Qwen-Image",
+      "model_index": {
+        "_class_name": "QwenImagePipeline",
+        "_diffusers_version": "0.34.0.dev0",
+        "scheduler": [
+          "diffusers",
+          "FlowMatchEulerDiscreteScheduler"
+        ],
+        "text_encoder": [
+          "transformers",
+          "Qwen2_5_VLForConditionalGeneration"
+        ],
+        "tokenizer": [
+          "transformers",
+          "Qwen2Tokenizer"
+        ],
+        "transformer": [
+          "diffusers",
+          "QwenImageTransformer2DModel"
+        ],
+        "vae": [
+          "diffusers",
+          "AutoencoderKLQwenImage"
+        ]
+      },
+      "text_encoder": {
+        "architectures": [
+          "Qwen2_5_VLForConditionalGeneration"
+        ],
+        "model_type": "qwen2_5_vl",
+        "hidden_size": 3584,
+        "num_hidden_layers": 28,
+        "num_attention_heads": 28,
+        "num_key_value_heads": 4
+      },
+      "transformer": {
+        "_class_name": "QwenImageTransformer2DModel",
+        "num_layers": 60,
+        "num_attention_heads": 24,
+        "attention_head_dim": 128,
+        "joint_attention_dim": 3584,
+        "in_channels": 64,
+        "out_channels": 16,
+        "patch_size": 2
+      },
+      "vae": {
+        "_class_name": "AutoencoderKLQwenImage",
+        "z_channels": null,
+        "temperal_downsample": [
+          false,
+          true,
+          true
+        ]
+      },
+      "num_safetensors_shards": 14,
+      "component_weight_gib": {
+        "text_encoder": 15.45,
+        "transformer": 38.05,
+        "vae": 0.24
+      },
+      "total_weight_gib": 53.74,
+      "transformer_sample_shapes": {
+        "img_in.bias": [
+          3072
+        ],
+        "img_in.weight": [
+          3072,
+          64
+        ],
+        "time_text_embed.timestep_embedder.linear_1.bias": [
+          3072
+        ],
+        "time_text_embed.timestep_embedder.linear_1.weight": [
+          3072,
+          256
+        ],
+        "time_text_embed.timestep_embedder.linear_2.bias": [
+          3072
+        ],
+        "time_text_embed.timestep_embedder.linear_2.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_k_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_k_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_q_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_q_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_v_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_v_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.norm_added_k.weight": [
+          128
+        ],
+        "transformer_blocks.0.attn.norm_added_q.weight": [
+          128
+        ]
+      }
+    }
+  },
+  "image_encode_ablation": {
+    "512x512_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 27.99,
+      "disagg_cpu_rtt_ms": 44.75,
+      "disagg_cpu_encode_ms": 35.89,
+      "disagg_images_per_s": 27.9,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.63
+    },
+    "512x512_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 28.02,
+      "disagg_cpu_rtt_ms": 37.5,
+      "disagg_cpu_encode_ms": 34.27,
+      "disagg_images_per_s": 29.2,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.75
+    },
+    "1024x1024_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 118.09,
+      "disagg_cpu_rtt_ms": 144.6,
+      "disagg_cpu_encode_ms": 140.15,
+      "disagg_images_per_s": 7.1,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.82
+    },
+    "1024x1024_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 112.98,
+      "disagg_cpu_rtt_ms": 143.75,
+      "disagg_cpu_encode_ms": 134.98,
+      "disagg_images_per_s": 7.4,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.79
+    },
+    "1328x1328_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 200.01,
+      "disagg_cpu_rtt_ms": 247.89,
+      "disagg_cpu_encode_ms": 236.74,
+      "disagg_images_per_s": 4.2,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.81
+    },
+    "1328x1328_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 189.18,
+      "disagg_cpu_rtt_ms": 237.71,
+      "disagg_cpu_encode_ms": 227.7,
+      "disagg_images_per_s": 4.4,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.8
+    },
+    "1664x928_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 165.42,
+      "disagg_cpu_rtt_ms": 217.74,
+      "disagg_cpu_encode_ms": 206.9,
+      "disagg_images_per_s": 4.8,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.76
+    },
+    "1664x928_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 166.0,
+      "disagg_cpu_rtt_ms": 204.44,
+      "disagg_cpu_encode_ms": 199.23,
+      "disagg_images_per_s": 5.0,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.81
+    },
+    "1536x1024_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 189.17,
+      "disagg_cpu_rtt_ms": 217.5,
+      "disagg_cpu_encode_ms": 211.26,
+      "disagg_images_per_s": 4.7,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.87
+    },
+    "1536x1024_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 169.54,
+      "disagg_cpu_rtt_ms": 209.24,
+      "disagg_cpu_encode_ms": 203.98,
+      "disagg_images_per_s": 4.9,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.81
+    },
+    "2048x2048_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 455.69,
+      "disagg_cpu_rtt_ms": 572.24,
+      "disagg_cpu_encode_ms": 564.85,
+      "disagg_images_per_s": 1.8,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-x5n8t",
+      "cpu_offload_speedup_x": 0.8
+    },
+    "2048x2048_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 449.62,
+      "disagg_cpu_rtt_ms": 554.01,
+      "disagg_cpu_encode_ms": 539.97,
+      "disagg_images_per_s": 1.9,
+      "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+      "cpu_offload_speedup_x": 0.81
+    }
+  },
+  "ti2i_vision_preproc_ablation": {
+    "offload_ok": true,
+    "local_cpu_preproc_ms": 19.27,
+    "disagg_cpu_rtt_ms": 34.45,
+    "disagg_cpu_preproc_ms": 19.9,
+    "encoder_host": "multimodal-cpu-offload-svc-576cb9dcb7-v96g8",
+    "cpu_offload_speedup_x": 0.56
+  },
+  "results": [
+    {
+      "family": "Family-A-Qwen-Image-20B",
+      "model": "Qwen/Qwen-Image",
+      "engine": "vllm-omni-flash_attn",
+      "precision": "BF16",
+      "chip_type": "v7x",
+      "tp_ulysses_degree": 4,
+      "dp_per_host": 2,
+      "cluster_dp_replicas": 8,
+      "task": "T2I-OpenAI-HTTP-512x512",
+      "resolution": "512x512",
+      "steps": 20,
+      "true_cfg_scale": 4.0,
+      "concurrency": 1,
+      "server_boot_s": 115.14,
+      "warmup_s": 70.3788,
+      "e2e_p50_s": 37.707,
+      "e2e_p95_s": 71.509,
+      "pixel_std": 61.44,
+      "images_per_min_replica": 1.59,
+      "cluster_images_per_min": 12.73,
+      "status": "PASS"
+    },
+    {
+      "family": "Family-A-Qwen-Image-20B",
+      "model": "Qwen/Qwen-Image",
+      "engine": "vllm-omni-flash_attn",
+      "precision": "BF16",
+      "chip_type": "v7x",
+      "tp_ulysses_degree": 4,
+      "dp_per_host": 2,
+      "cluster_dp_replicas": 8,
+      "task": "T2I-OpenAI-HTTP-1024x1024",
+      "resolution": "1024x1024",
+      "steps": 20,
+      "true_cfg_scale": 4.0,
+      "concurrency": 1,
+      "server_boot_s": 115.14,
+      "warmup_s": 101.6338,
+      "e2e_p50_s": 43.041,
+      "e2e_p95_s": 81.191,
+      "pixel_std": 50.8,
+      "images_per_min_replica": 1.39,
+      "cluster_images_per_min": 11.14,
+      "status": "PASS"
+    },
+    {
+      "family": "Family-A-Qwen-Image-20B",
+      "model": "Qwen/Qwen-Image",
+      "engine": "vllm-omni-flash_attn",
+      "precision": "BF16",
+      "chip_type": "v7x",
+      "tp_ulysses_degree": 4,
+      "dp_per_host": 2,
+      "cluster_dp_replicas": 8,
+      "task": "T2I-OpenAI-HTTP-1024x1024",
+      "resolution": "1024x1024",
+      "steps": 20,
+      "true_cfg_scale": 4.0,
+      "concurrency": 2,
+      "server_boot_s": 115.14,
+      "warmup_s": 101.6338,
+      "e2e_p50_s": 7.129,
+      "e2e_p95_s": 9.449,
+      "pixel_std": 51.2,
+      "images_per_min_replica": 12.65,
+      "cluster_images_per_min": 101.18,
+      "status": "PASS"
+    }
+  ]
+}

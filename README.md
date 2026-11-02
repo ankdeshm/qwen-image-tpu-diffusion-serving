@@ -38,7 +38,90 @@ All non-TPU pre-processing and media encoding work is offloaded over intra-clust
 
 ## 4. Benchmark Results (`v5p` & `v7x`)
 
-> Live TPU `v5p` and `v7x` benchmark sweeps are currently executing on cluster slices (`v5p-32`, `v5p-16`, and `v7x-spot-4c`). Incremental checkpoints (`results/<slice>/summary.json` and `results/<slice>/SUMMARY.md`) are automatically synced here as each sweep stage finishes.
+Measured results linked 1:1 to raw JSON and Markdown summaries under [`results/`](./results/):
+
+- **`v5p-16`** (`0` benchmark rows, updated `2026-11-02T19:10:04.446185+00:00`): [`results/v5p-16/SUMMARY.md`](./results/v5p-16/SUMMARY.md) · [`results/v5p-16/summary.json`](./results/v5p-16/summary.json)
+
+# Qwen-Image (`20B` MMDiT) & Qwen-Image-2.1 / 2.1-Turbo (`Qwen3-VL`) — `v5p-16` (`v5p`)
+
+- **Updated (UTC):** `2026-11-02T19:10:04.446185+00:00`
+- **Hardware Topology:** `4` hosts x `4` TPU cores/host = `16` TPU cores
+- **Models Covered:** `Qwen/Qwen-Image` (`Qwen2.5-VL` + 60-block MMDiT), `Qwen/Qwen-Image-2.1-Turbo` (`8`-step `Qwen3-VL`), `Qwen/Qwen-Image-2.1` (`28`-step `Qwen3-VL`)
+
+## Disaggregated CPU PNG / WebP Image Encoding Ablation (`multimodal-cpu-offload-svc:8090`)
+
+| Resolution | Offload Active | On-Host CPU PNG (ms) | Disagg AVX-512 PNG RTT (ms) | Disagg WebP RTT (ms) | PNG Offload Speedup |
+|---|:---:|---:|---:|---:|---:|
+| `512x512` | `True` | 38.87 | **41.62** | 41.67 | `0.93x` |
+| `1024x1024` | `True` | 155.28 | **144.85** | 144.12 | `1.07x` |
+| `1328x1328` | `True` | 261.07 | **247.68** | 239.1 | `1.05x` |
+| `1664x928` | `True` | 228.64 | **212.28** | 208.14 | `1.08x` |
+| `1536x1024` | `True` | 232.42 | **222.32** | 208.74 | `1.05x` |
+| `2048x2048` | `True` | 615.21 | **583.98** | 554.44 | `1.05x` |
+
+## End-to-End Diffusion Serving & TorchTPU Compilation Results
+
+| Model | Engine | Prec | TP/Ulysses | Cluster DP | Task / Resolution | Steps | Conc | Stage-1 VL (ms) | MMDiT Step (ms) | VAE (ms) | E2E Local CPU (s) | E2E P50 (s) | Cluster img/min | Status |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+
+- **`v7x-16`** (`3` benchmark rows, updated `2026-11-02T19:07:03.733583+00:00`): [`results/v7x-16/SUMMARY.md`](./results/v7x-16/SUMMARY.md) · [`results/v7x-16/summary.json`](./results/v7x-16/summary.json)
+
+# Qwen-Image (`20B` MMDiT) & Qwen-Image-2.1 / 2.1-Turbo (`Qwen3-VL`) — `v7x-16` (`v7x`)
+
+- **Updated (UTC):** `2026-11-02T19:07:03.733583+00:00`
+- **Hardware Topology:** `4` hosts x `8` TPU cores/host = `32` TPU cores
+- **Models Covered:** `Qwen/Qwen-Image` (`Qwen2.5-VL` + 60-block MMDiT), `Qwen/Qwen-Image-2.1-Turbo` (`8`-step `Qwen3-VL`), `Qwen/Qwen-Image-2.1` (`28`-step `Qwen3-VL`)
+
+## Disaggregated CPU PNG / WebP Image Encoding Ablation (`multimodal-cpu-offload-svc:8090`)
+
+| Resolution | Offload Active | On-Host CPU PNG (ms) | Disagg AVX-512 PNG RTT (ms) | Disagg WebP RTT (ms) | PNG Offload Speedup |
+|---|:---:|---:|---:|---:|---:|
+| `512x512` | `True` | 27.99 | **44.75** | 37.5 | `0.63x` |
+| `1024x1024` | `True` | 118.09 | **144.6** | 143.75 | `0.82x` |
+| `1328x1328` | `True` | 200.01 | **247.89** | 237.71 | `0.81x` |
+| `1664x928` | `True` | 165.42 | **217.74** | 204.44 | `0.76x` |
+| `1536x1024` | `True` | 189.17 | **217.5** | 209.24 | `0.87x` |
+| `2048x2048` | `True` | 455.69 | **572.24** | 554.01 | `0.8x` |
+
+## End-to-End Diffusion Serving & TorchTPU Compilation Results
+
+| Model | Engine | Prec | TP/Ulysses | Cluster DP | Task / Resolution | Steps | Conc | Stage-1 VL (ms) | MMDiT Step (ms) | VAE (ms) | E2E Local CPU (s) | E2E P50 (s) | Cluster img/min | Status |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-512x512` | `20` | `1` | - | - | - | - | **37.707** | **12.73** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `1` | - | - | - | - | **43.041** | **11.14** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `8` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `2` | - | - | - | - | **7.129** | **101.18** | `PASS` |
+
+- **`v7x-spot-4c`** (`8` benchmark rows, updated `2026-11-02T19:03:48.814991+00:00`): [`results/v7x-spot-4c/SUMMARY.md`](./results/v7x-spot-4c/SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./results/v7x-spot-4c/summary.json)
+
+# Qwen-Image (`20B` MMDiT) & Qwen-Image-2.1 / 2.1-Turbo (`Qwen3-VL`) — `v7x-spot-4c` (`v7x`)
+
+- **Updated (UTC):** `2026-11-02T19:03:48.814991+00:00`
+- **Hardware Topology:** `1` hosts x `8` TPU cores/host = `8` TPU cores
+- **Models Covered:** `Qwen/Qwen-Image` (`Qwen2.5-VL` + 60-block MMDiT), `Qwen/Qwen-Image-2.1-Turbo` (`8`-step `Qwen3-VL`), `Qwen/Qwen-Image-2.1` (`28`-step `Qwen3-VL`)
+
+## Disaggregated CPU PNG / WebP Image Encoding Ablation (`multimodal-cpu-offload-svc:8090`)
+
+| Resolution | Offload Active | On-Host CPU PNG (ms) | Disagg AVX-512 PNG RTT (ms) | Disagg WebP RTT (ms) | PNG Offload Speedup |
+|---|:---:|---:|---:|---:|---:|
+| `512x512` | `True` | 32.28 | **76.49** | 139.15 | `0.42x` |
+| `1024x1024` | `True` | 114.86 | **148.75** | 147.02 | `0.77x` |
+| `1328x1328` | `True` | 201.42 | **248.87** | 238.45 | `0.81x` |
+| `1664x928` | `True` | 165.59 | **217.95** | 210.2 | `0.76x` |
+| `1536x1024` | `True` | 173.81 | **221.78** | 209.05 | `0.78x` |
+| `2048x2048` | `True` | 455.06 | **573.35** | 557.77 | `0.79x` |
+
+## End-to-End Diffusion Serving & TorchTPU Compilation Results
+
+| Model | Engine | Prec | TP/Ulysses | Cluster DP | Task / Resolution | Steps | Conc | Stage-1 VL (ms) | MMDiT Step (ms) | VAE (ms) | E2E Local CPU (s) | E2E P50 (s) | Cluster img/min | Status |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---|
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-512x512` | `20` | `1` | - | - | - | - | **37.344** | **3.21** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `1` | - | - | - | - | **44.658** | **2.68** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `2` | - | - | - | - | **7.364** | **24.46** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `20` | `4` | - | - | - | - | **12.22** | **4.68** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1024x1024` | `50` | `1` | - | - | - | - | **11.683** | **10.24** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `20` | `1` | - | - | - | - | **36.6** | **3.27** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `20` | `2` | - | - | - | - | **8.912** | **19.85** | `PASS` |
+| `Qwen/Qwen-Image` | `vllm-omni-flash_attn` | `BF16` | `4` | `2` | `T2I-OpenAI-HTTP-1328x1328` | `50` | `1` | - | - | - | - | **13.902** | **8.59** | `PASS` |
 
 ---
 
