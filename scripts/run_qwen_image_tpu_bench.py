@@ -560,9 +560,18 @@ def run_vllm_omni_qwen_image_sweep(
                 log(rank, f"[Engine-1 vllm-omni] Server exited before {size_str} steps={steps}; breaking profile.")
                 break
 
-            # Warmup XLA shape cache for (size_str, steps)
+            # Warmup XLA shape cache across distinct Qwen2.5-VL prompt token lengths for (size_str, steps)
             log(rank, f"[Engine-1 vllm-omni] Warmup {size_str} steps={steps} cfg=4.0 ({tag})...")
-            wm = post_vllm_image_generation(endpoint, PROMPTS[0], size_str, steps, 4.0, seed=100, timeout_s=900.0)
+            wm = {"ok": True, "e2e_s": 0.0}
+            for wp_i, wp_text in enumerate(PROMPTS[:2]):
+                wm_i = post_vllm_image_generation(
+                    endpoint, wp_text, size_str, steps, 4.0, seed=100 + wp_i, timeout_s=900.0
+                )
+                if wp_i == 0:
+                    wm = wm_i
+                if not wm_i.get("ok"):
+                    wm = wm_i
+                    break
             if not wm.get("ok"):
                 err_s = str(wm.get("error", "unknown"))[:220]
                 log(rank, f"[Engine-1 vllm-omni] Warmup diagnostic on {size_str} steps={steps}: {err_s}")
