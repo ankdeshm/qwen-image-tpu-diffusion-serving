@@ -1,8 +1,8 @@
 # `Qwen/Qwen-Image` (20B MMDiT) & `Qwen/Qwen-Image-2.1` (`Qwen3-VL`) Diffusion Serving on Cloud TPU `v5p` & `v7x` — Slice `v7x-spot-4c`
 
-### Slice `v7x-spot-4c` (`v7x`, `39` Verified Benchmark Points)
+### Slice `v7x-spot-4c` (`v7x`, `87` Verified Benchmark Points)
 
-- **Raw Artifacts:** [`results/v7x-spot-4c/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./summary.json) *(updated `2026-11-02T20:05:35.688850+00:00`)*
+- **Raw Artifacts:** [`results/v7x-spot-4c/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./summary.json) *(updated `2026-11-02T20:32:54.561312+00:00`)*
 
 #### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
 
@@ -34,6 +34,17 @@
 | `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `20` | `2` | `53.35` | **`5.865`** | `7.821` | `15.22` | **`15.22`** |
 | `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `50` | `1` | `9.37` | **`9.254`** | `9.286` | `6.44` | **`6.44`** |
 
+#### Track B — `Qwen-Image-2.1` & `Qwen-Image-2.1-Turbo` (`Qwen3-VL` Text-Encoded Native Pipeline)
+
+| Model Checkpoint | Engine | `TP × Cluster DP` | Resolution | Steps | Weight Load (s) | Median E2E (s) | Pixel Std | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `1024x1024` | `8` | `9.48` | **`3.623`** | `77.09` | `16.56` | **`132.48`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `1536x1024` | `8` | `9.48` | **`5.383`** | `82.54` | `11.15` | **`89.20`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `2048x2048` | `8` | `9.48` | **`15.759`** | `88.00` | `3.81` | **`30.48`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `1024x1024` | `28` | `11.81` | **`11.925`** | `77.42` | `5.03` | **`40.24`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `1536x1024` | `28` | `11.81` | **`17.859`** | `84.38` | `3.36` | **`26.88`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=8` | `2048x2048` | `28` | `11.81` | **`52.948`** | `78.06` | `1.13` | **`9.04`** |
+
 #### Track C — `TorchTPU` Multi-Stage Breakdown (`Qwen-Image` & `Qwen-Image-2.1`, `BF16` & `FP8` MXU)
 
 | Model | Engine & Kernel | Task & Resolution | Steps | VL Encode (ms) | MMDiT Step (ms) | VAE Decode (ms) | Local PNG (ms) | Disagg PNG (ms) | E2E Disagg (s) | Cluster Img/min |
@@ -52,6 +63,48 @@
 | `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1664x928-50step` | `50` | `2.69` | `88.52` | `20.33` | `165.6` | **`212.1`** | **`4.661`** | **`12.87`** |
 | `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-20step` | `20` | `13.23` | `84.06` | `16.08` | `112.6` | **`143.8`** | **`1.854`** | **`32.36`** |
 | `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1328x1328-20step` | `20` | `12.23` | `138.63` | `26.76` | `190.6` | **`246.9`** | **`3.058`** | **`19.62`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-512x512-20step` | `20` | `2,231.14` | `19.62` | `5,239.29` | `28.1` | **`37.9`** | **`7.901`** | **`7.59`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-512x512-50step` | `50` | `1.84` | `18.56` | `6.58` | `28.1` | **`37.9`** | **`0.974`** | **`61.59`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-20step` | `20` | `1.97` | `53.13` | `5,837.16` | `112.6` | **`143.8`** | **`7.045`** | **`8.52`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-50step` | `50` | `2.12` | `52.03` | `13.74` | `112.6` | **`143.8`** | **`2.761`** | **`21.73`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-20step` | `20` | `1.88` | `108.30` | `6,479.12` | `190.6` | **`246.9`** | **`8.894`** | **`6.75`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-50step` | `50` | `2.48` | `107.11` | `22.79` | `190.6` | **`246.9`** | **`5.628`** | **`10.66`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-20step` | `20` | `2.32` | `89.60` | `8,222.84` | `165.6` | **`212.1`** | **`10.229`** | **`5.87`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-50step` | `50` | `2.04` | `88.35` | `20.75` | `165.6` | **`212.1`** | **`4.653`** | **`12.90`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-20step` | `20` | `19.00` | `72.44` | `15.87` | `112.6` | **`143.8`** | **`1.627`** | **`36.87`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `15.54` | `30.70` | `1.24` | `112.6` | **`143.8`** | **`0.406`** | **`295.42`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `17.38` | `29.96` | `0.90` | `175.8` | **`222.8`** | **`0.481`** | **`249.62`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `18.84` | `35.52` | `0.85` | `112.6` | **`143.8`** | **`0.448`** | **`268.06`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `2,323.10` | `21.81` | `6,085.00` | `112.6` | **`143.8`** | **`8.726`** | **`6.88`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `3.18` | `35.68` | `6,235.58` | `175.8` | **`222.8`** | **`6.747`** | **`8.89`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-2048x2048-8step` | `8` | `3.09` | `100.98` | `6,953.58` | `452.3` | **`570.6`** | **`8.335`** | **`7.20`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1024x1024-8step` | `8` | `2,315.71` | `28.74` | `13.76` | `112.6` | **`143.8`** | **`2.729`** | **`21.99`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-8step` | `8` | `7.05` | `57.00` | `19.61` | `175.8` | **`222.8`** | **`0.731`** | **`82.07`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `16.81` | `31.45` | `15.83` | `112.6` | **`143.8`** | **`0.428`** | **`140.16`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `12.34` | `45.89` | `23.23` | `175.8` | **`222.8`** | **`0.625`** | **`95.93`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `2,776.27` | `18.95` | `5,681.96` | `112.6` | **`143.8`** | **`8.754`** | **`6.85`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1536x1024-8step` | `8` | `2.78` | `30.57` | `6,215.12` | `175.8` | **`222.8`** | **`6.685`** | **`8.97`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-2048x2048-8step` | `8` | `2.40` | `91.36` | `6,912.62` | `452.3` | **`570.6`** | **`8.217`** | **`7.30`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1024x1024-8step` | `8` | `2,904.81` | `25.37` | `14.07` | `112.6` | **`143.8`** | **`3.291`** | **`18.23`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-8step` | `8` | `4.86` | `52.66` | `19.28` | `175.8` | **`222.8`** | **`0.694`** | **`86.48`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `16.73` | `31.13` | `15.86` | `112.6` | **`143.8`** | **`0.425`** | **`141.03`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager-fallback (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `0.91` | `26.25` | `125.73` | `175.8` | **`222.8`** | **`1.110`** | **`108.12`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `15.94` | `28.88` | `1.13` | `112.6` | **`143.8`** | **`0.969`** | **`123.78`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `16.28` | `29.74` | `1.49` | `175.8` | **`222.8`** | **`1.073`** | **`111.80`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `1.06` | `35.32` | `109.11` | `175.8` | **`222.8`** | **`1.348`** | **`89.06`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `2,327.00` | `40.08` | `5,863.16` | `112.6` | **`143.8`** | **`9.456`** | **`6.34`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `2.80` | `71.25` | `6,038.64` | `175.8` | **`222.8`** | **`8.259`** | **`7.26`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-2048x2048-28step` | `28` | `2.71` | `202.88` | `7,048.35` | `452.3` | **`570.6`** | **`13.302`** | **`4.51`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1024x1024-28step` | `28` | `2,288.68` | `54.43` | `14.17` | `112.6` | **`143.8`** | **`3.996`** | **`15.01`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `6.87` | `100.05` | `19.14` | `175.8` | **`222.8`** | **`3.076`** | **`19.51`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `13.89` | `54.49` | `15.82` | `112.6` | **`143.8`** | **`1.699`** | **`35.31`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `19.82` | `84.97` | `22.71` | `175.8` | **`222.8`** | **`2.644`** | **`22.69`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-28step` | `28` | `2,838.55` | `37.82` | `6,174.55` | `112.6` | **`143.8`** | **`10.216`** | **`5.87`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1536x1024-28step` | `28` | `2.87` | `66.24` | `6,028.80` | `175.8` | **`222.8`** | **`8.109`** | **`7.40`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-2048x2048-28step` | `28` | `2.70` | `195.44` | `6,631.72` | `452.3` | **`570.6`** | **`12.677`** | **`4.73`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1024x1024-28step` | `28` | `3,005.67` | `50.25` | `14.11` | `112.6` | **`143.8`** | **`4.596`** | **`13.05`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `4.93` | `92.10` | `19.83` | `175.8` | **`222.8`** | **`2.852`** | **`21.04`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-28step` | `28` | `22.21` | `48.36` | `15.69` | `112.6` | **`143.8`** | **`1.536`** | **`39.07`** |
 
 #### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
 
