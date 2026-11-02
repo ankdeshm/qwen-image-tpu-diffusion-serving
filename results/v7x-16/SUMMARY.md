@@ -1,8 +1,8 @@
 # `Qwen/Qwen-Image` (20B MMDiT) & `Qwen/Qwen-Image-2.1` (`Qwen3-VL`) Diffusion Serving on Cloud TPU `v5p` & `v7x` — Slice `v7x-16`
 
-### Slice `v7x-16` (`v7x`, `14` Verified Benchmark Points)
+### Slice `v7x-16` (`v7x`, `19` Verified Benchmark Points)
 
-- **Raw Artifacts:** [`results/v7x-16/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-16/summary.json`](./summary.json) *(updated `2026-11-02T20:01:36.668802+00:00`)*
+- **Raw Artifacts:** [`results/v7x-16/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-16/summary.json`](./summary.json) *(updated `2026-11-02T20:06:16.988042+00:00`)*
 
 #### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
 
@@ -22,6 +22,11 @@
 | `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `1` | `9.02` | **`6.054`** | `8.737` | `9.85` | **`78.81`** |
 | `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1024x1024` | `20` | `2` | `9.02` | **`5.116`** | `6.843` | `17.44` | **`139.50`** |
 | `vllm-omni-sdpa` | `BF16` | `U=4 × DP=8` | `1328x1328` | `20` | `1` | `8.01` | **`5.794`** | `7.716` | `10.24` | **`81.91`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=4` | `512x512` | `20` | `1` | `10.11` | **`6.859`** | `10.055` | `8.73` | **`34.93`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=4` | `1024x1024` | `20` | `1` | `46.13` | **`7.025`** | `10.426` | `8.49` | **`33.97`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=4` | `1024x1024` | `20` | `2` | `46.13` | **`5.989`** | `8.092` | `14.76` | **`59.05`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=4` | `1024x1024` | `20` | `4` | `46.13` | **`9.655`** | `25.832` | `9.28` | **`37.10`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=4` | `1024x1024` | `50` | `1` | `8.67` | **`8.716`** | `8.830` | `6.85` | **`27.41`** |
 
 #### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
 

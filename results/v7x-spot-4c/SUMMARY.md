@@ -1,8 +1,8 @@
 # `Qwen/Qwen-Image` (20B MMDiT) & `Qwen/Qwen-Image-2.1` (`Qwen3-VL`) Diffusion Serving on Cloud TPU `v5p` & `v7x` — Slice `v7x-spot-4c`
 
-### Slice `v7x-spot-4c` (`v7x`, `25` Verified Benchmark Points)
+### Slice `v7x-spot-4c` (`v7x`, `39` Verified Benchmark Points)
 
-- **Raw Artifacts:** [`results/v7x-spot-4c/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./summary.json) *(updated `2026-11-02T19:59:29.819135+00:00`)*
+- **Raw Artifacts:** [`results/v7x-spot-4c/SUMMARY.md`](./SUMMARY.md) · [`results/v7x-spot-4c/summary.json`](./summary.json) *(updated `2026-11-02T20:05:35.688850+00:00`)*
 
 #### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
 
@@ -33,6 +33,25 @@
 | `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `20` | `1` | `53.35` | **`9.293`** | `14.695` | `6.42` | **`6.42`** |
 | `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `20` | `2` | `53.35` | **`5.865`** | `7.821` | `15.22` | **`15.22`** |
 | `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=1` | `1664x928` | `50` | `1` | `9.37` | **`9.254`** | `9.286` | `6.44` | **`6.44`** |
+
+#### Track C — `TorchTPU` Multi-Stage Breakdown (`Qwen-Image` & `Qwen-Image-2.1`, `BF16` & `FP8` MXU)
+
+| Model | Engine & Kernel | Task & Resolution | Steps | VL Encode (ms) | MMDiT Step (ms) | VAE Decode (ms) | Local PNG (ms) | Disagg PNG (ms) | E2E Disagg (s) | Cluster Img/min |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-50step` | `50` | `0.80` | `60.11` | `1.61` | `112.6` | **`143.8`** | **`3.152`** | **`38.08`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-50step` | `50` | `0.79` | `61.77` | `30.60` | `190.6` | **`246.9`** | **`3.367`** | **`35.64`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-20step` | `20` | `1.15` | `61.28` | `8,541.60` | `165.6` | **`212.1`** | **`9.980`** | **`12.02`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-50step` | `50` | `0.96` | `62.64` | `21.63` | `165.6` | **`212.1`** | **`3.367`** | **`35.64`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-512x512-20step` | `20` | `1,762.19` | `20.59` | `5,136.50` | `28.1` | **`37.9`** | **`7.348`** | **`8.17`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-512x512-50step` | `50` | `2.22` | `16.86` | `6.74` | `28.1` | **`37.9`** | **`0.890`** | **`67.43`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-20step` | `20` | `2.78` | `52.47` | `6,248.09` | `112.6` | **`143.8`** | **`7.444`** | **`8.06`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-50step` | `50` | `2.35` | `50.36` | `13.43` | `112.6` | **`143.8`** | **`2.677`** | **`22.41`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1328x1328-20step` | `20` | `2.55` | `105.46` | `6,324.07` | `190.6` | **`246.9`** | **`8.683`** | **`6.91`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1328x1328-50step` | `50` | `2.60` | `103.76` | `23.19` | `190.6` | **`246.9`** | **`5.460`** | **`10.99`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1664x928-20step` | `20` | `2.65` | `87.79` | `8,038.61` | `165.6` | **`212.1`** | **`10.009`** | **`5.99`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1664x928-50step` | `50` | `2.69` | `88.52` | `20.33` | `165.6` | **`212.1`** | **`4.661`** | **`12.87`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-20step` | `20` | `13.23` | `84.06` | `16.08` | `112.6` | **`143.8`** | **`1.854`** | **`32.36`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1328x1328-20step` | `20` | `12.23` | `138.63` | `26.76` | `190.6` | **`246.9`** | **`3.058`** | **`19.62`** |
 
 #### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
 
