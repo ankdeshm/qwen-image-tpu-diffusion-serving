@@ -256,6 +256,37 @@ Every table below is generated directly from the verified `PASS` records in [`re
 | `2048x2048_png` | `617.05` | **`572.14`** | `564.25` | `1.8` | **`1.08x`** |
 | `2048x2048_webp` | `618.71` | **`549.99`** | `541.30` | `1.8` | **`1.12x`** |
 
+### Slice `v5p-16-wave4-adaptive64k` (`v5p`, `5` Verified Benchmark Points)
+
+- **Raw Artifacts:** [`results/v5p-16-wave4-adaptive64k/SUMMARY.md`](./results/v5p-16-wave4-adaptive64k/SUMMARY.md) · [`results/v5p-16-wave4-adaptive64k/summary.json`](./results/v5p-16-wave4-adaptive64k/summary.json) *(updated `2026-11-02T21:22:16.697207+00:00`)*
+
+#### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
+
+| Engine | Precision | `Ulysses × Cluster DP` | Resolution | Steps | Conc | Warmup (s) | Median E2E (s) | P95 E2E (s) | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `512x512` | `20` | `1` | `117.22` | **`62.261`** | `119.606` | `0.96` | **`3.85`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `1` | `118.32` | **`63.087`** | `120.096` | `0.95` | **`3.80`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `2` | `118.32` | **`9.367`** | `12.653` | `9.45` | **`37.81`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `4` | `118.32` | **`75.161`** | `144.301` | `1.66` | **`6.65`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `50` | `1` | `14.68` | **`14.769`** | `14.800` | `4.05` | **`16.20`** |
+
+#### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
+
+| Resolution & Format | On-Host CPU (ms) | Disagg CPU RTT (ms) | Remote AVX-512 Compute (ms) | Remote Rate (img/s) | Speedup vs On-Host |
+|---|---:|---:|---:|---:|---:|
+| `512x512_png` | `38.67` | **`35.78`** | `34.96` | `28.6` | **`1.08x`** |
+| `512x512_webp` | `38.47` | **`34.66`** | `33.90` | `29.5` | **`1.11x`** |
+| `1024x1024_png` | `155.83` | **`140.96`** | `139.76` | `7.2` | **`1.11x`** |
+| `1024x1024_webp` | `154.94` | **`136.47`** | `135.17` | `7.4` | **`1.14x`** |
+| `1328x1328_png` | `261.05` | **`238.98`** | `236.55` | `4.2` | **`1.09x`** |
+| `1328x1328_webp` | `260.52` | **`229.98`** | `227.72` | `4.4` | **`1.13x`** |
+| `1664x928_png` | `227.90` | **`209.06`** | `206.99` | `4.8` | **`1.09x`** |
+| `1664x928_webp` | `227.88` | **`201.15`** | `199.02` | `5.0` | **`1.13x`** |
+| `1536x1024_png` | `231.73` | **`212.40`** | `210.42` | `4.8` | **`1.09x`** |
+| `1536x1024_webp` | `232.21` | **`205.08`** | `203.10` | `4.9` | **`1.13x`** |
+| `2048x2048_png` | `625.72` | **`567.54`** | `563.06` | `1.8` | **`1.10x`** |
+| `2048x2048_webp` | `613.55` | **`545.01`** | `540.20` | `1.9` | **`1.13x`** |
+
 ### Slice `v7x-16` (`v7x`, `88` Verified Benchmark Points)
 
 - **Raw Artifacts:** [`results/v7x-16/SUMMARY.md`](./results/v7x-16/SUMMARY.md) · [`results/v7x-16/summary.json`](./results/v7x-16/summary.json) *(updated `2026-11-02T20:43:46.998504+00:00`)*
@@ -379,6 +410,33 @@ Every table below is generated directly from the verified `PASS` records in [`re
 | `1536x1024_webp` | `168.93` | **`212.11`** | `202.61` | `4.9` | **`0.80x`** |
 | `2048x2048_png` | `447.21` | **`571.82`** | `563.83` | `1.8` | **`0.78x`** |
 | `2048x2048_webp` | `445.36` | **`553.49`** | `539.54` | `1.9` | **`0.80x`** |
+
+### Slice `v7x-8-wave3-keepalive` (`v7x`, `1` Verified Benchmark Points)
+
+- **Raw Artifacts:** [`results/v7x-8-wave3-keepalive/SUMMARY.md`](./results/v7x-8-wave3-keepalive/SUMMARY.md) · [`results/v7x-8-wave3-keepalive/summary.json`](./results/v7x-8-wave3-keepalive/summary.json) *(updated `2026-11-02T21:22:11.533253+00:00`)*
+
+#### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
+
+| Engine | Precision | `Ulysses × Cluster DP` | Resolution | Steps | Conc | Warmup (s) | Median E2E (s) | P95 E2E (s) | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `512x512` | `20` | `1` | `71.98` | **`37.683`** | `71.708` | `1.59` | **`6.37`** |
+
+#### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
+
+| Resolution & Format | On-Host CPU (ms) | Disagg CPU RTT (ms) | Remote AVX-512 Compute (ms) | Remote Rate (img/s) | Speedup vs On-Host |
+|---|---:|---:|---:|---:|---:|
+| `512x512_png` | `28.01` | **`36.05`** | `34.86` | `28.7` | **`0.78x`** |
+| `512x512_webp` | `27.87` | **`34.93`** | `33.92` | `29.5` | **`0.80x`** |
+| `1024x1024_png` | `123.63` | **`142.05`** | `140.39` | `7.1` | **`0.87x`** |
+| `1024x1024_webp` | `114.16` | **`136.30`** | `134.95` | `7.4` | **`0.84x`** |
+| `1328x1328_png` | `198.73` | **`238.87`** | `236.41` | `4.2` | **`0.83x`** |
+| `1328x1328_webp` | `189.44` | **`231.07`** | `228.15` | `4.4` | **`0.82x`** |
+| `1664x928_png` | `165.84` | **`209.23`** | `207.01` | `4.8` | **`0.79x`** |
+| `1664x928_webp` | `169.34` | **`201.26`** | `198.97` | `5.0` | **`0.84x`** |
+| `1536x1024_png` | `178.49` | **`212.62`** | `210.67` | `4.7` | **`0.84x`** |
+| `1536x1024_webp` | `168.74` | **`205.13`** | `202.72` | `4.9` | **`0.82x`** |
+| `2048x2048_png` | `452.78` | **`567.80`** | `562.76` | `1.8` | **`0.80x`** |
+| `2048x2048_webp` | `450.75` | **`545.52`** | `540.74` | `1.8` | **`0.83x`** |
 
 ### Slice `v7x-spot-4c` (`v7x`, `87` Verified Benchmark Points)
 
