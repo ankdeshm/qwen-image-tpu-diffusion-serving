@@ -418,6 +418,130 @@ Every table below is generated directly from the verified `PASS` records in [`re
 | `2048x2048_png` | `447.21` | **`571.82`** | `563.83` | `1.8` | **`0.78x`** |
 | `2048x2048_webp` | `445.36` | **`553.49`** | `539.54` | `1.9` | **`0.80x`** |
 
+### Slice `v7x-8` (`v7x`, `88` Verified Benchmark Points)
+
+- **Raw Artifacts:** [`results/v7x-8/SUMMARY.md`](./results/v7x-8/SUMMARY.md) · [`results/v7x-8/summary.json`](./results/v7x-8/summary.json) *(updated `2026-11-06T13:47:49.268519+00:00`)*
+
+#### Track A — OpenAI-Compatible `vllm-omni` HTTP Serving (`Qwen/Qwen-Image` 20B MMDiT)
+
+| Engine | Precision | `Ulysses × Cluster DP` | Resolution | Steps | Conc | Warmup (s) | Median E2E (s) | P95 E2E (s) | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `512x512` | `20` | `1` | `71.94` | **`39.064`** | `74.083` | `1.54` | **`6.14`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `1` | `106.84` | **`45.506`** | `86.294` | `1.32` | **`5.27`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `2` | `106.84` | **`7.983`** | `10.800` | `11.07` | **`44.30`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `4` | `106.84` | **`12.962`** | `107.870` | `2.22` | **`8.90`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1024x1024` | `50` | `1` | `11.89` | **`11.318`** | `11.324` | `5.28` | **`21.13`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1328x1328` | `20` | `1` | `95.69` | **`37.338`** | `68.984` | `1.60` | **`6.42`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1328x1328` | `20` | `2` | `95.69` | **`8.861`** | `11.947` | `9.99` | **`39.95`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1328x1328` | `50` | `1` | `13.62` | **`13.720`** | `13.768` | `4.35` | **`17.41`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1664x928` | `20` | `1` | `117.79` | **`53.919`** | `102.563` | `1.11` | **`4.45`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1664x928` | `20` | `2` | `117.79` | **`8.087`** | `10.938` | `10.92` | **`43.66`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=4 × DP=4` | `1664x928` | `50` | `1` | `12.59` | **`12.602`** | `12.687` | `4.74` | **`18.96`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `1` | `9.45` | **`6.114`** | `8.826` | `9.75` | **`39.01`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=4` | `1024x1024` | `20` | `2` | `9.45` | **`5.204`** | `6.860` | `17.40` | **`69.60`** |
+| `vllm-omni-sdpa` | `BF16` | `U=4 × DP=4` | `1328x1328` | `20` | `1` | `7.99` | **`5.829`** | `7.837` | `10.18` | **`40.74`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `512x512` | `20` | `1` | `10.40` | **`7.066`** | `10.324` | `8.48` | **`16.96`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1024x1024` | `20` | `1` | `48.57` | **`7.398`** | `10.597` | `8.07` | **`16.13`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1024x1024` | `20` | `2` | `48.57` | **`6.211`** | `8.473` | `14.09` | **`28.18`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1024x1024` | `20` | `4` | `48.57` | **`9.781`** | `25.747` | `9.30` | **`18.61`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1024x1024` | `50` | `1` | `8.93` | **`9.158`** | `9.174` | `6.52` | **`13.05`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1328x1328` | `20` | `1` | `59.42` | **`8.480`** | `12.711` | `7.02` | **`14.04`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1328x1328` | `20` | `2` | `59.42` | **`5.953`** | `8.086` | `14.72` | **`29.44`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1328x1328` | `50` | `1` | `9.87` | **`9.595`** | `9.658` | `6.21` | **`12.42`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1664x928` | `20` | `1` | `53.82` | **`9.505`** | `14.679` | `6.28` | **`12.55`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1664x928` | `20` | `2` | `53.82` | **`6.751`** | `9.157` | `13.02` | **`26.04`** |
+| `vllm-omni-flash_attn` | `BF16` | `U=8 × DP=2` | `1664x928` | `50` | `1` | `10.42` | **`10.240`** | `10.298` | `5.83` | **`11.66`** |
+
+#### Track B — `Qwen-Image-2.1` & `Qwen-Image-2.1-Turbo` (`Qwen3-VL` Text-Encoded Native Pipeline)
+
+| Model Checkpoint | Engine | `TP × Cluster DP` | Resolution | Steps | Weight Load (s) | Median E2E (s) | Pixel Std | Replica Img/min | Cluster Img/min |
+|---|---|---|---|---:|---:|---:|---:|---:|---:|
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `1024x1024` | `8` | `13.97` | **`3.600`** | `85.67` | `16.67` | **`266.72`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `1536x1024` | `8` | `13.97` | **`5.370`** | `82.75` | `11.17` | **`178.72`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `2048x2048` | `8` | `13.97` | **`15.787`** | `86.30` | `3.80` | **`60.80`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `1024x1024` | `28` | `11.51` | **`11.893`** | `78.81` | `5.05` | **`80.80`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `1536x1024` | `28` | `11.51` | **`17.861`** | `81.94` | `3.36` | **`53.76`** |
+| `Qwen/Qwen-Image-2.1` | `diffusers-QwenImage21Pipeline-single_core_tpu0` | `TP=1 × DP=16` | `2048x2048` | `28` | `11.51` | **`52.990`** | `75.48` | `1.13` | **`18.08`** |
+
+#### Track C — `TorchTPU` Multi-Stage Breakdown (`Qwen-Image` & `Qwen-Image-2.1`, `BF16` & `FP8` MXU)
+
+| Model | Engine & Kernel | Task & Resolution | Steps | VL Encode (ms) | MMDiT Step (ms) | VAE Decode (ms) | Local PNG (ms) | Disagg PNG (ms) | E2E Disagg (s) | Cluster Img/min |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-50step` | `50` | `0.98` | `63.51` | `0.90` | `114.0` | **`142.2`** | **`3.320`** | **`72.28`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-50step` | `50` | `1.13` | `64.07` | `29.20` | `190.4` | **`240.2`** | **`3.474`** | **`69.08`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-20step` | `20` | `0.98` | `65.79` | `8,278.49` | `166.4` | **`209.8`** | **`9.805`** | **`24.48`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-50step` | `50` | `1.00` | `64.02` | `20.68` | `166.4` | **`209.8`** | **`3.432`** | **`69.92`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-20step` | `20` | `16.67` | `77.08` | `1.00` | `114.0` | **`142.2`** | **`1.701`** | **`141.04`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-512x512-20step` | `20` | `1,727.05` | `19.59` | `5,629.67` | `28.3` | **`36.4`** | **`7.785`** | **`15.42`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-512x512-50step` | `50` | `2.44` | `19.16` | `6.47` | `28.3` | **`36.4`** | **`1.003`** | **`119.62`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-20step` | `20` | `2.88` | `51.76` | `5,763.93` | `114.0` | **`142.2`** | **`6.944`** | **`17.28`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-50step` | `50` | `2.43` | `51.08` | `13.54` | `114.0` | **`142.2`** | **`2.712`** | **`44.24`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1328x1328-20step` | `20` | `2.80` | `106.21` | `6,427.27` | `190.4` | **`240.2`** | **`8.794`** | **`13.64`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1328x1328-50step` | `50` | `2.55` | `106.14` | `23.55` | `190.4` | **`240.2`** | **`5.573`** | **`21.54`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1664x928-20step` | `20` | `2.46` | `89.72` | `8,392.99` | `166.4` | **`209.8`** | **`10.400`** | **`11.54`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (BF16_MXU)` | `T2I-1664x928-50step` | `50` | `2.41` | `88.89` | `19.63` | `166.4` | **`209.8`** | **`4.677`** | **`25.66`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-20step` | `20` | `13.22` | `77.39` | `15.75` | `114.0` | **`142.2`** | **`1.719`** | **`69.82`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (BF16_MXU)` | `T2I-1328x1328-20step` | `20` | `11.62` | `137.95` | `27.15` | `190.4` | **`240.2`** | **`3.038`** | **`39.50`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-512x512-20step` | `20` | `2,250.65` | `19.78` | `5,236.68` | `28.3` | **`36.4`** | **`7.919`** | **`15.16`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-512x512-50step` | `50` | `1.85` | `18.37` | `6.79` | `28.3` | **`36.4`** | **`0.963`** | **`124.56`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-20step` | `20` | `2.10` | `53.00` | `5,903.98` | `114.0` | **`142.2`** | **`7.108`** | **`16.88`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-50step` | `50` | `1.86` | `53.19` | `13.92` | `114.0` | **`142.2`** | **`2.817`** | **`42.60`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-20step` | `20` | `2.54` | `107.59` | `6,915.12` | `190.4` | **`240.2`** | **`9.310`** | **`12.88`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1328x1328-50step` | `50` | `2.08` | `108.11` | `22.83` | `190.4` | **`240.2`** | **`5.671`** | **`21.16`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-20step` | `20` | `2.07` | `90.71` | `8,383.90` | `166.4` | **`209.8`** | **`10.410`** | **`11.52`** |
+| `Qwen/Qwen-Image` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1664x928-50step` | `50` | `2.42` | `90.34` | `19.77` | `166.4` | **`209.8`** | **`4.749`** | **`25.28`** |
+| `Qwen/Qwen-Image` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-20step` | `20` | `18.05` | `72.97` | `15.85` | `114.0` | **`142.2`** | **`1.635`** | **`73.38`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `14.37` | `28.02` | `1.08` | `114.0` | **`142.2`** | **`0.382`** | **`628.60`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `14.00` | `24.53` | `1.11` | `168.5` | **`213.4`** | **`0.425`** | **`565.08`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `21.94` | `43.12` | `1.16` | `114.0` | **`142.2`** | **`0.510`** | **`470.40`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `2,349.32` | `21.49` | `5,760.81` | `114.0` | **`142.2`** | **`8.424`** | **`14.24`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `2.94` | `35.27` | `6,418.44` | `168.5` | **`213.4`** | **`6.917`** | **`17.34`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `T2I-2048x2048-8step` | `8` | `3.38` | `102.11` | `6,939.72` | `449.5` | **`571.7`** | **`8.332`** | **`14.40`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1024x1024-8step` | `8` | `2,305.26` | `28.54` | `13.78` | `114.0` | **`142.2`** | **`2.713`** | **`44.24`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-8step` | `8` | `6.89` | `56.18` | `19.44` | `168.5` | **`213.4`** | **`0.712`** | **`168.48`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-8step` | `8` | `17.79` | `31.27` | `15.69` | `114.0` | **`142.2`** | **`0.426`** | **`281.80`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-8step` | `8` | `16.33` | `45.89` | `23.24` | `168.5` | **`213.4`** | **`0.620`** | **`193.54`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `2,917.30` | `19.76` | `6,173.59` | `114.0` | **`142.2`** | **`9.391`** | **`12.78`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1536x1024-8step` | `8` | `2.72` | `30.83` | `6,148.01` | `168.5` | **`213.4`** | **`6.611`** | **`18.16`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-2048x2048-8step` | `8` | `2.66` | `93.21` | `7,040.96` | `449.5` | **`571.7`** | **`8.361`** | **`14.36`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1024x1024-8step` | `8` | `3,015.33` | `24.70` | `13.73` | `114.0` | **`142.2`** | **`3.392`** | **`35.38`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-8step` | `8` | `5.19` | `53.52` | `19.79` | `168.5` | **`213.4`** | **`0.690`** | **`174.02`** |
+| `Qwen/Qwen-Image-2.1-Turbo` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-8step` | `8` | `20.63` | `34.56` | `16.20` | `114.0` | **`142.2`** | **`0.455`** | **`263.46`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager-fallback (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `1.08` | `21.37` | `127.53` | `168.5` | **`213.4`** | **`0.963`** | **`249.08`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `14.28` | `25.96` | `1.22` | `114.0` | **`142.2`** | **`0.885`** | **`271.32`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `15.19` | `26.50` | `1.08` | `168.5` | **`213.4`** | **`0.972`** | **`247.00`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager-fallback (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `1.05` | `35.77` | `105.93` | `168.5` | **`213.4`** | **`1.345`** | **`178.44`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `2,393.84` | `40.10` | `6,205.53` | `114.0` | **`142.2`** | **`9.864`** | **`12.16`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `3.13` | `71.17` | `5,945.71` | `168.5` | **`213.4`** | **`8.155`** | **`14.72`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `T2I-2048x2048-28step` | `28` | `3.11` | `204.12` | `6,980.52` | `449.5` | **`571.7`** | **`13.271`** | **`9.04`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1024x1024-28step` | `28` | `2,361.86` | `55.81` | `13.92` | `114.0` | **`142.2`** | **`4.104`** | **`29.24`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (BF16_MXU)` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `6.91` | `101.13` | `20.13` | `168.5` | **`213.4`** | **`3.095`** | **`38.78`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1024x1024-28step` | `28` | `16.33` | `54.03` | `15.92` | `114.0` | **`142.2`** | **`1.687`** | **`71.12`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (BF16_MXU)` | `T2I-1536x1024-28step` | `28` | `12.99` | `83.72` | `22.88` | `168.5` | **`213.4`** | **`2.593`** | **`46.28`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-28step` | `28` | `2,830.76` | `37.86` | `6,031.46` | `114.0` | **`142.2`** | **`10.064`** | **`11.92`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1536x1024-28step` | `28` | `2.46` | `66.77` | `6,002.91` | `168.5` | **`213.4`** | **`8.088`** | **`14.84`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-2048x2048-28step` | `28` | `2.84` | `195.65` | `6,739.10` | `449.5` | **`571.7`** | **`12.792`** | **`9.38`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1024x1024-28step` | `28` | `2,926.72` | `50.18` | `14.31` | `114.0` | **`142.2`** | **`4.511`** | **`26.60`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-compiled (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `TI2I-RefEdit-2Imgs-1536x1024-28step` | `28` | `5.14` | `91.62` | `19.64` | `168.5` | **`213.4`** | **`2.827`** | **`42.46`** |
+| `Qwen/Qwen-Image-2.1` | `torchtpu-eager (torch._scaled_mm(float8_e4m3fn, out_dtype=bfloat16))` | `T2I-1024x1024-28step` | `28` | `21.05` | `47.99` | `15.87` | `114.0` | **`142.2`** | **`1.523`** | **`78.80`** |
+
+#### Track D — Disaggregated CPU Image Encoding (`PNG` & `WebP`) Ablation (`POST /encode_image`)
+
+| Resolution & Format | On-Host CPU (ms) | Disagg CPU RTT (ms) | Remote AVX-512 Compute (ms) | Remote Rate (img/s) | Local / Disagg RTT Ratio |
+|---|---:|---:|---:|---:|---:|
+| `512x512_png` | `28.32` | **`36.39`** | `34.94` | `28.6` | **`0.78x`** |
+| `512x512_webp` | `27.87` | **`35.24`** | `34.05` | `29.4` | **`0.79x`** |
+| `1024x1024_png` | `114.00` | **`142.17`** | `140.49` | `7.1` | **`0.80x`** |
+| `1024x1024_webp` | `112.41` | **`136.70`** | `135.05` | `7.4` | **`0.82x`** |
+| `1328x1328_png` | `190.44` | **`240.24`** | `237.17` | `4.2` | **`0.79x`** |
+| `1328x1328_webp` | `196.31` | **`230.67`** | `227.75` | `4.4` | **`0.85x`** |
+| `1664x928_png` | `166.42` | **`209.75`** | `207.22` | `4.8` | **`0.79x`** |
+| `1664x928_webp` | `166.28` | **`201.25`** | `198.90` | `5.0` | **`0.83x`** |
+| `1536x1024_png` | `168.51` | **`213.37`** | `210.77` | `4.7` | **`0.79x`** |
+| `1536x1024_webp` | `178.89` | **`206.30`** | `203.50` | `4.9` | **`0.87x`** |
+| `2048x2048_png` | `449.52` | **`571.70`** | `566.62` | `1.8` | **`0.79x`** |
+| `2048x2048_webp` | `452.68` | **`544.94`** | `539.99` | `1.9` | **`0.83x`** |
+
 ### Slice `v7x-8-wave3-keepalive` (`v7x`, `1` Verified Benchmark Points)
 
 - **Raw Artifacts:** [`results/v7x-8-wave3-keepalive/SUMMARY.md`](./results/v7x-8-wave3-keepalive/SUMMARY.md) · [`results/v7x-8-wave3-keepalive/summary.json`](./results/v7x-8-wave3-keepalive/summary.json) *(updated `2026-11-02T21:22:11.533253+00:00`)*
