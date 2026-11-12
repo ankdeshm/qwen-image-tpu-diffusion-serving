@@ -1,0 +1,289 @@
+{
+  "updated_at_utc": "2026-11-02T21:22:11.533253+00:00",
+  "models": [
+    "Qwen/Qwen-Image",
+    "Qwen/Qwen-Image-2.1-Turbo",
+    "Qwen/Qwen-Image-2.1"
+  ],
+  "slice_name": "v7x-8-keepalive",
+  "chip_type": "v7x",
+  "num_hosts": 2,
+  "cores_per_host": 8,
+  "stage_infos": {
+    "Qwen-Image": {
+      "repo_id": "Qwen/Qwen-Image",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image",
+      "cached": true
+    },
+    "Qwen-Image-2-1-Turbo": {
+      "repo_id": "Qwen/Qwen-Image-2.1-Turbo",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image-2-1-Turbo",
+      "cached": true
+    },
+    "Qwen-Image-2-1": {
+      "repo_id": "Qwen/Qwen-Image-2.1",
+      "gcs_uri": "gs://YOUR_GCS_BUCKET/models/Qwen/Qwen-Image-2-1",
+      "cached": true
+    }
+  },
+  "diffusers_setup": {},
+  "manifests": {
+    "Qwen-Image": {
+      "dir_name": "Qwen-Image",
+      "model_index": {
+        "_class_name": "QwenImagePipeline",
+        "_diffusers_version": "0.34.0.dev0",
+        "scheduler": [
+          "diffusers",
+          "FlowMatchEulerDiscreteScheduler"
+        ],
+        "text_encoder": [
+          "transformers",
+          "Qwen2_5_VLForConditionalGeneration"
+        ],
+        "tokenizer": [
+          "transformers",
+          "Qwen2Tokenizer"
+        ],
+        "transformer": [
+          "diffusers",
+          "QwenImageTransformer2DModel"
+        ],
+        "vae": [
+          "diffusers",
+          "AutoencoderKLQwenImage"
+        ]
+      },
+      "text_encoder": {
+        "architectures": [
+          "Qwen2_5_VLForConditionalGeneration"
+        ],
+        "model_type": "qwen2_5_vl",
+        "hidden_size": 3584,
+        "num_hidden_layers": 28,
+        "num_attention_heads": 28,
+        "num_key_value_heads": 4
+      },
+      "transformer": {
+        "_class_name": "QwenImageTransformer2DModel",
+        "num_layers": 60,
+        "num_attention_heads": 24,
+        "attention_head_dim": 128,
+        "joint_attention_dim": 3584,
+        "in_channels": 64,
+        "out_channels": 16,
+        "patch_size": 2
+      },
+      "vae": {
+        "_class_name": "AutoencoderKLQwenImage",
+        "z_channels": null,
+        "temperal_downsample": [
+          false,
+          true,
+          true
+        ]
+      },
+      "num_safetensors_shards": 14,
+      "component_weight_gib": {
+        "text_encoder": 15.45,
+        "transformer": 38.05,
+        "vae": 0.24
+      },
+      "total_weight_gib": 53.74,
+      "transformer_sample_shapes": {
+        "img_in.bias": [
+          3072
+        ],
+        "img_in.weight": [
+          3072,
+          64
+        ],
+        "time_text_embed.timestep_embedder.linear_1.bias": [
+          3072
+        ],
+        "time_text_embed.timestep_embedder.linear_1.weight": [
+          3072,
+          256
+        ],
+        "time_text_embed.timestep_embedder.linear_2.bias": [
+          3072
+        ],
+        "time_text_embed.timestep_embedder.linear_2.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_k_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_k_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_q_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_q_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.add_v_proj.bias": [
+          3072
+        ],
+        "transformer_blocks.0.attn.add_v_proj.weight": [
+          3072,
+          3072
+        ],
+        "transformer_blocks.0.attn.norm_added_k.weight": [
+          128
+        ],
+        "transformer_blocks.0.attn.norm_added_q.weight": [
+          128
+        ]
+      }
+    }
+  },
+  "image_encode_ablation": {
+    "512x512_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 28.01,
+      "disagg_cpu_rtt_ms": 36.05,
+      "disagg_cpu_encode_ms": 34.86,
+      "disagg_images_per_s": 28.7,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.78
+    },
+    "512x512_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 27.87,
+      "disagg_cpu_rtt_ms": 34.93,
+      "disagg_cpu_encode_ms": 33.92,
+      "disagg_images_per_s": 29.5,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.8
+    },
+    "1024x1024_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 123.63,
+      "disagg_cpu_rtt_ms": 142.05,
+      "disagg_cpu_encode_ms": 140.39,
+      "disagg_images_per_s": 7.1,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.87
+    },
+    "1024x1024_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 114.16,
+      "disagg_cpu_rtt_ms": 136.3,
+      "disagg_cpu_encode_ms": 134.95,
+      "disagg_images_per_s": 7.4,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.84
+    },
+    "1328x1328_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 198.73,
+      "disagg_cpu_rtt_ms": 238.87,
+      "disagg_cpu_encode_ms": 236.41,
+      "disagg_images_per_s": 4.2,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.83
+    },
+    "1328x1328_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 189.44,
+      "disagg_cpu_rtt_ms": 231.07,
+      "disagg_cpu_encode_ms": 228.15,
+      "disagg_images_per_s": 4.4,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.82
+    },
+    "1664x928_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 165.84,
+      "disagg_cpu_rtt_ms": 209.23,
+      "disagg_cpu_encode_ms": 207.01,
+      "disagg_images_per_s": 4.8,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.79
+    },
+    "1664x928_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 169.34,
+      "disagg_cpu_rtt_ms": 201.26,
+      "disagg_cpu_encode_ms": 198.97,
+      "disagg_images_per_s": 5.0,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.84
+    },
+    "1536x1024_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 178.49,
+      "disagg_cpu_rtt_ms": 212.62,
+      "disagg_cpu_encode_ms": 210.67,
+      "disagg_images_per_s": 4.7,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.84
+    },
+    "1536x1024_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 168.74,
+      "disagg_cpu_rtt_ms": 205.13,
+      "disagg_cpu_encode_ms": 202.72,
+      "disagg_images_per_s": 4.9,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.82
+    },
+    "2048x2048_png": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 452.78,
+      "disagg_cpu_rtt_ms": 567.8,
+      "disagg_cpu_encode_ms": 562.76,
+      "disagg_images_per_s": 1.8,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.8
+    },
+    "2048x2048_webp": {
+      "offload_ok": true,
+      "local_cpu_png_ms": 450.75,
+      "disagg_cpu_rtt_ms": 545.52,
+      "disagg_cpu_encode_ms": 540.74,
+      "disagg_images_per_s": 1.8,
+      "encoder_host": "cpu-offload-pod",
+      "cpu_offload_speedup_x": 0.83
+    }
+  },
+  "ti2i_vision_preproc_ablation": {
+    "offload_ok": true,
+    "local_cpu_preproc_ms": 19.68,
+    "disagg_cpu_rtt_ms": 22.63,
+    "disagg_cpu_preproc_ms": 19.23,
+    "encoder_host": "cpu-offload-pod",
+    "cpu_offload_speedup_x": 0.87
+  },
+  "results": [
+    {
+      "family": "Family-A-Qwen-Image-20B",
+      "model": "Qwen/Qwen-Image",
+      "engine": "vllm-omni-flash_attn",
+      "precision": "BF16",
+      "chip_type": "v7x",
+      "tp_ulysses_degree": 4,
+      "dp_per_host": 2,
+      "cluster_dp_replicas": 4,
+      "task": "T2I-OpenAI-HTTP-512x512",
+      "resolution": "512x512",
+      "steps": 20,
+      "true_cfg_scale": 4.0,
+      "concurrency": 1,
+      "server_boot_s": 107.83,
+      "warmup_s": 71.9789,
+      "e2e_p50_s": 37.683,
+      "e2e_p95_s": 71.708,
+      "pixel_std": 61.44,
+      "images_per_min_replica": 1.59,
+      "cluster_images_per_min": 6.37,
+      "status": "PASS"
+    }
+  ],
+  "diagnostic_or_skipped_probes": 0
+}

@@ -1,0 +1,69 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: qwen-image-v7x-16-bench
+  namespace: default
+spec:
+  completions: 4
+  parallelism: 4
+  completionMode: Indexed
+  backoffLimit: 4
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+    spec:
+      restartPolicy: OnFailure
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        cloud.google.com/gke-nodepool: YOUR_TPU_NODEPOOL
+        cloud.google.com/gke-tpu-accelerator: tpu7x
+        cloud.google.com/gke-tpu-topology: 2x2x4
+      tolerations:
+      - key: google.com/tpu
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: tpu-bench
+        image: us-central1-docker.pkg.dev/YOUR_GCP_PROJECT_ID/vllm/vllm-torchtpu-omni:v0.32.0
+        securityContext:
+          privileged: true
+        env:
+        - name: PJRT_DEVICE
+          value: "TPU"
+        - name: MULTIMODAL_CPU_OFFLOAD_URL
+          value: "http://multimodal-cpu-offload-svc.default.svc.cluster.local:8090"
+        - name: HF_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: hf-token
+              key: HF_TOKEN
+              optional: true
+        resources:
+          requests:
+            google.com/tpu: "4"
+            memory: "700Gi"
+          limits:
+            google.com/tpu: "4"
+        volumeMounts:
+        - name: dshm
+          mountPath: /dev/shm
+        command:
+        - bash
+        - -lc
+        - |
+          set -euo pipefail
+          mount -o remount,size=850G /dev/shm || true
+          python3 -u /workspace/scripts/run_qwen_image_tpu_bench.py \
+            --chip-type=v7x \
+            --slice-name=v7x-16 \
+            --num-hosts=4 \
+            --cores-per-host=8 \
+            --bucket=YOUR_GCS_BUCKET \
+            --use-shm \
+            --output-dir=/tmp/results/qwen-image
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
